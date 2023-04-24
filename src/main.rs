@@ -4,6 +4,8 @@ use std::fmt;
 use std::io::{self, BufRead, BufReader, Read};
 use std::fs::File;
 use colored::*;
+use std::io::Error;
+
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
 struct Cli{
@@ -24,13 +26,12 @@ fn main() {
     println!("{}",args);
     let file = std::fs::File::open(&args.path).expect("could not read file");
     let reader = std::io::BufReader::new(file);
-
     for line in reader.lines() {
         let line = line.expect("could not read line");
         if line.contains(&args.pattern) {
             println!("{}", line);
+        }
     }
-}
 
 }
 
