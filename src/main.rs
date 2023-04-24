@@ -1,7 +1,9 @@
 #![allow(unused)]
 use clap::Parser;
 use std::fmt;
-
+use std::io::{self, BufRead, BufReader, Read};
+use std::fs::File;
+use colored::*;
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
 struct Cli{
@@ -13,16 +15,22 @@ struct Cli{
 
 impl fmt::Display for Cli {
    fn fmt(&self, f: &mut fmt::Formatter) -> fmt:: Result {
-        write!(f,"Looking for pattern {} in {}", self.pattern, self.path.display())    
+        write!(f,"Looking for pattern \"{}\" in {}", self.pattern, self.path.display())    
     }
 }
+
 fn main() {
     let args = Cli::parse();
     println!("{}",args);
-    let content = std::fs::read_to_string(&args.path).expect("could not read file");
-    for line in content.lines() {
-        if line.contains(&args.pattern){
+    let file = std::fs::File::open(&args.path).expect("could not read file");
+    let reader = std::io::BufReader::new(file);
+
+    for line in reader.lines() {
+        let line = line.expect("could not read line");
+        if line.contains(&args.pattern) {
             println!("{}", line);
-        }
     }
 }
+
+}
+
